@@ -3,8 +3,8 @@
 <head>
   <script type="text/javascript">
       navigator.serviceWorker.register(
-        '/base/testing/karma-sw-mocha/testrunner.sw.js',
-        { scope: '/base/testing/karma-sw-mocha/' }
+        '/base/node_modules/karma-sw-mocha/lib/testrunner.sw.js',
+        { scope: '/base/node_modules/karma-sw-mocha/lib/' }
       )
       .then(console.log.bind(console, 'Test runner installed!'))
       .catch(console.error.bind(console, 'Some bad happened!'));
