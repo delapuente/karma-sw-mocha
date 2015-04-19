@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="text/javascript">
+      navigator.serviceWorker.register(
+        '/base/testing/karma-sw-mocha/testrunner.sw.js',
+        { scope: '/base/testing/karma-sw-mocha/' }
+      )
+      .then(console.log.bind(console, 'Test runner installed!'))
+      .catch(console.error.bind(console, 'Some bad happened!'));
+
+      if (typeof window.BroadcastChannel === 'function') {
+        var resultChannel = new BroadcastChannel('testrunner-results');
+        resultChannel.onmessage = execKarmaMethod;
+      }
+      else {
+        window.addEventListener('message', execKarmaMethod);
+      }
+
+      function execKarmaMethod(evt) {
+        var msg = evt.data;
+        var tc = window.parent.__karma__;
+        tc[msg.command].apply(tc, msg.args);
+        if (msg.command === 'complete') {
+          navigator.serviceWorker.getRegistration()
+          .then(function (reg) {
+            reg.unregister();
+            console.log('Test runner uninstalled!');
+          });
+        }
+      }
+  </script>
+</head>
+<body>
+</body>
+</html>
