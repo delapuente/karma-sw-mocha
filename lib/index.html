@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style type="text/css">
+    .pass {
+      background-color: lightgreen;
+    }
+    
+    .fail {
+      background-color: red;
+    }
+  </style>
   <script type="text/javascript">
       navigator.serviceWorker.register(
         '/base/node_modules/karma-sw-mocha/lib/testrunner.sw.js',
@@ -19,6 +28,13 @@
 
       function execKarmaMethod(evt) {
         var msg = evt.data;
+        if (msg.command === 'result') {
+          if (msg.args && msg.args.length > 0 && msg.args[0].test) {
+            drawResult(msg.args[0].test);
+          } else {
+            console.log('Dont have test for command ', msg);
+          }
+        }
         var tc = window.parent.__karma__;
         tc[msg.command].apply(tc, msg.args);
         if (msg.command === 'complete') {
@@ -29,8 +45,60 @@
           });
         }
       }
+
+      function drawResult(test) {
+        var el;
+        if ('passed' == test.state) {
+          el = fragment('<li class="test pass %e"><h2>%s<span class="duration"> %ems</span></h2></li>', test.speed, test.title, test.duration);
+        } else if (test.pending) {
+          el = fragment('<li class="test pass pending"><h2>%s</h2></li>', test.title);
+        } else {
+          el = fragment('<li class="test fail"><h2>%s</h2></li>', test.title);
+          var str = test.err.stack || test.err.toString();
+
+          // FF / Opera do not add the message
+          if (!~str.indexOf(test.err.message)) {
+            str = test.err.message + '\n' + str;
+          }
+
+          // <=IE7 stringifies to [Object Error]. Since it can be overloaded, we
+          // check for the result of the stringifying.
+          if ('[object Error]' == str) str = test.err.message;
+
+          // Safari doesn't give you a stack. Let's at least provide a source line.
+          if (!test.err.stack && test.err.sourceURL && test.err.line !== undefined) {
+            str += "\n(" + test.err.sourceURL + ":" + test.err.line + ")";
+          }
+
+          el.appendChild(fragment('<pre class="error">%s</pre>', str));
+        }
+        var container = document.getElementById('results');
+        container.appendChild(el);
+      }
+
+      /**
+       * Return a DOM fragment from `html`.
+       */
+
+      function fragment(html) {
+        var args = arguments
+          , div = document.createElement('div')
+          , i = 1;
+
+        div.innerHTML = html.replace(/%([se])/g, function(_, type){
+          switch (type) {
+            case 's': return String(args[i++]);
+            case 'e': return escape(args[i++]);
+          }
+        });
+
+        return div.firstChild;
+      }
+
   </script>
 </head>
 <body>
+  <ol id="results">
+  </ol>
 </body>
 </html>
