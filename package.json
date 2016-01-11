@@ -1,6 +1,6 @@
 {
   "name": "karma-sw-mocha",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "A Karma plugin. Adapter for Mocha testing framework when running in a ServiceWorker.",
   "main": "lib/index.js",
   "repository": {
@@ -14,7 +14,9 @@
     "serviceworker"
   ],
   "author": "Salvador de la Puente González <salva@unoyunodiez.com>",
-  "dependencies": {},
+  "dependencies": {
+    "mocha": "^2.3.4"
+  },
   "devDependencies": {},
   "license": "MIT"
 }
