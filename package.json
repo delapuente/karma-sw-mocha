@@ -1,7 +1,7 @@
 {
   "name": "karma-sw-mocha",
-  "version": "0.1.1",
-  "description": "A Karma plugin. Adapter for Mocha testing framework when running in a ServiceWorker.",
+  "version": "0.1.2",
+  "description": "A Karma plugin, framework for Mocha testing when running inside a ServiceWorker.",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
