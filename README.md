@@ -21,6 +21,14 @@ And add it as the first item of your framework list in the Karma configuration f
 
 Notice the name of the framework is **`sw-mocha`** and not `karma-sw-mocha`.
 
+You'll probably need to adjust the `files` entry. As Karma does not support SW natively, it can not automatically add the additional scripts you want for your service workers. In order to avoid them to be included as `&lt;script&gt;` tags, modify the `files` entry to become:
+
+{
+  files: [
+    {pattern: 'path/to/service-worker/includes/**/*.js', included: false}
+  ]
+}
+
 ### Adding tests
 For the service worker to know which test files should load, you need to add them to a special file `sw-tests.js` in the root of your project:
 
@@ -45,7 +53,7 @@ var SW_TESTS = [
 A testing framework is usually insufficient to provide an efficient testing environment. You usually will need an assertion library like [Chai](http://chaijs.com/) and a spy / mock library as [Sinon](http://sinonjs.org/). You can install Karma versions of these libraries with:
 
 ```bash
-$ npm install --save karma-sinon karma-chai
+$ npm install --save sinon chai karma-sinon karma-chai
 ```
 
 To include them in your service worker setup, edit `sw-tests.js` and import the proper scripts there:
