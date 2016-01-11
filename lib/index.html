@@ -3,19 +3,12 @@
 <head>
   <script type="text/javascript">
       navigator.serviceWorker.register(
-        '/base/node_modules/karma-sw-mocha/lib/testrunner.sw.js',
-        { scope: '/base/node_modules/karma-sw-mocha/lib/' }
+        '/base/node_modules/karma-sw-mocha/lib/testrunner.sw.js'
       )
       .then(console.log.bind(console, 'Test runner installed!'))
       .catch(console.error.bind(console, 'Some bad happened!'));
 
-      if (typeof window.BroadcastChannel === 'function') {
-        var resultChannel = new BroadcastChannel('testrunner-results');
-        resultChannel.onmessage = execKarmaMethod;
-      }
-      else {
-        window.addEventListener('message', execKarmaMethod);
-      }
+      navigator.serviceWorker.addEventListener('message', execKarmaMethod);
 
       function execKarmaMethod(evt) {
         var msg = evt.data;
