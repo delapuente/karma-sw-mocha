@@ -4,6 +4,7 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
+    // This must be the root of the project
     basePath: '../',
 
 
@@ -11,6 +12,13 @@ module.exports = function(config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['sw-mocha', 'sinon', 'chai'],
 
+    client: {
+        'sw-mocha': {
+            SW_TESTS: [
+                'samples/mocha-sinon-chai-bdd/sw-tests.js'
+            ]
+        }
+    },
 
     // list of files / patterns to load in the browser
     files: [
@@ -54,17 +62,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'NightlySW'],
-
-    customLaunchers: {
-      'NightlySW': {
-        base: 'FirefoxNightly',
-        prefs: {
-          'devtools.serviceWorkers.testing.enabled': true,
-          'dom.serviceWorkers.enabled': true
-        }
-      }
-    },
+    browsers: ['Chrome', 'Firefox'],
 
 
     // Continuous Integration mode

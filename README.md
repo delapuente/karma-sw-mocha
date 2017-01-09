@@ -30,23 +30,19 @@ You'll probably need to adjust the `files` entry. As Karma does not support SW n
 }
 
 ### Adding tests
-For the service worker to know which test files should load, you need to add them to a special file `sw-tests.js` in the root of your project:
+For the service worker to know which test files should load, you need to add them to the client configuration as well as the files array in the config. This is because the framework loads these files within the service worker directly, and does not have access to the main files list:
+
+**Please remember to include the service worker that you want to test as the first script to be loaded in here.**
 
 ```js
-// sw-tests.js
-var SW_TESTS = [
-  '/base/path/to/your/tests/myTest.sw-spec.js'
-];
-```
-
-Karma will serve all your files under the `/base/` path. So if your tests are in `test/test1.sw-spec.js` and `test/test2.sw-spec.js` they should be added as:
-
-```js
-// sw-tests.js
-var SW_TESTS = [
-  '/base/test/test1.sw-spec.js',
-  '/base/test/test2.sw-spec.js'
-];
+client: {
+    'sw-mocha': {
+        SW_TESTS: [
+            'path/to/your/worker/sw.js',
+            'samples/mocha-sinon-chai-bdd/sw-tests.js'
+        ]
+    }
+},
 ```
 
 ### Loading other libraries
@@ -60,7 +56,6 @@ To include them in your service worker setup, edit `sw-tests.js` and import the 
 
 ```js
 // sw-tests.js
-var SW_TESTS = [ /* your test files... */ ];
 importScripts('/base/node_modules/chai/chai.js');
 importScripts('/base/node_modules/sinon/pkg/sinon.js');
 ```
@@ -78,10 +73,8 @@ The file `sw-tests.js` will be load before executing any test so you can add the
 
 ```js
 // sw-tests.js
-var SW_TESTS = [ /* your test files... */ ];
-
 importScripts('/base/node_modules/chai/chai.js');
-// your other imports...
+// any other imports, not your tests...
 
 mocha.setup({ ui: 'bdd' });
 self.expect = chai.expect;
@@ -91,21 +84,7 @@ self.expect = chai.expect;
 
 In [`samples/mocha-sinon-chai-bdd`](https://github.com/delapuente/karma-sw-mocha/tree/master/samples/mocha-sinon-chai-bdd) you will find sample files for the Karma configuration file and `sw-tests.js` to set and Mocha BDD + Chai + Sinon environment up.
 
-## Enabling tests of Firefox
-Currently only Firefox Nightly has support for Service Workers and only after turning on certain flags. You will need a custom launcher to enable SW on Nightly. Do it by replacing the `Firefox` launcher in your config file with some similar to this:
+## Browser support
+At the time of writing, Chrome, Firefox, Opera and Samsung Internet support service workers. See this [compatibility table](https://jakearchibald.github.io/isserviceworkerready/) for the most up to date information. **PhantomJS** is not supported and is highly unlikely to ever be supported.
 
-```js
-{
-  browsers: ['NightlySW'],
-
-  customLaunchers: {
-    'NightlySW': {
-      base: 'FirefoxNightly',
-      prefs: {
-        'devtools.serviceWorkers.testing.enabled': true,
-        'dom.serviceWorkers.enabled': true
-      }
-    }
-  }
-}
-```
+For headless support, try [SlimerJS](https://github.com/laurentj/slimerjs) ([runner](https://github.com/karma-runner/karma-slimerjs-launcher)) or, if you're feeling lucky, [Raw Chromium for Linux](https://download-chromium.appspot.com/) with --headless and --disable-gpu flags set. Track the Chrome Headless project [here](https://bugs.chromium.org/p/chromium/issues/detail?id=546953)

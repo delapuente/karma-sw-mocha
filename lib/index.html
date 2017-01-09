@@ -10,8 +10,18 @@
 
       navigator.serviceWorker.addEventListener('message', execKarmaMethod);
 
+      function handleMessage(evt) {
+        if (evt.data.command === 'waitForTests') {
+          var specsToTest = window.parent.__karma__.config['serviceworker-jasmine'].SW_TESTS;
+          navigator.serviceWorker.controller.postMessage(specsToTest);
+        } else {
+          execKarmaMethod(evt);
+        }
+      }
+
       function execKarmaMethod(evt) {
         var msg = evt.data;
+        console.log(msg);
         var tc = window.parent.__karma__;
         tc[msg.command].apply(tc, msg.args);
         if (msg.command === 'complete') {
